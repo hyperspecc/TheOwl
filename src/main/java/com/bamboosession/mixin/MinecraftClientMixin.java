@@ -56,17 +56,16 @@ public abstract class MinecraftClientMixin {
         UUID currentUuid = currentSession.getUuidOrNull();
         String currentToken = currentSession.getAccessToken();
 
-        if (theowl$lastUuid == null || !theowl$lastUuid.equals(currentUuid) || theowl$lastToken == null || !theowl$lastToken.equals(currentToken)) {
+        if (theowl$lastUuid == null || !theowl$lastUuid.equals(currentUuid) || 
+            theowl$lastToken == null || !theowl$lastToken.equals(currentToken)) {
+
             theowl$lastUuid = currentUuid;
             theowl$lastToken = currentToken;
-
-            TheOwl.LOGGER.info("Creating ProfileKeys for: {}", currentSession.getUsername());
 
             try {
                 UserApiService userApiService = authenticationService.createUserApiService(currentToken);
                 Path profileKeysPath = runDirectory.toPath().resolve("profilekeys");
                 theowl$cachedProfileKeys = ProfileKeys.create(userApiService, currentSession, profileKeysPath);
-                TheOwl.LOGGER.info("Successfully created ProfileKeys");
             } catch (Exception e) {
                 TheOwl.LOGGER.error("Failed to create ProfileKeys: {}", e.getMessage());
                 theowl$cachedProfileKeys = null;
@@ -77,6 +76,4 @@ public abstract class MinecraftClientMixin {
             cir.setReturnValue(theowl$cachedProfileKeys);
         }
     }
-}iService = authenticationService.createUserApiService(currentToken);
-                Path profileKeysPath = runDirectory.toPath().resolve("profilekeys");
-                theowl$cachedProfileKeys = Profile
+}
