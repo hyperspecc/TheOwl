@@ -1,4 +1,4 @@
-package com.bamboosession.utils;
+package com.theowl.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class BambooAPI {
+public class TheOwlAPI {
 
     private static final String PROFILE_URL = "https://api.minecraftservices.com/minecraft/profile";
     private static final String SKIN_URL = "https://api.minecraftservices.com/minecraft/profile/skins";
