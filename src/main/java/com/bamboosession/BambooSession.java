@@ -1,4 +1,4 @@
-package com.bamboosession;
+package com.theowl;
 
 import net.minecraft.client.session.Session;
 import org.slf4j.Logger;
@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BambooSession {
-    public static final Logger LOGGER = LoggerFactory.getLogger("bamboo-session");
+public class TheOwl {
+    public static final Logger LOGGER = LoggerFactory.getLogger("the-owl");
 
     public static Session originalSession;
     public static Session currentSession;
@@ -18,11 +18,10 @@ public class BambooSession {
         originalSession = initialSession;
         currentSession = initialSession;
         overrideActive = true;
-        LOGGER.info("Bamboo Session initialized");
+        LOGGER.info("TheOwl initialized");
     }
 
     public static Session createSession(String username, String uuidString, String accessToken) {
-        // Format UUID if needed (remove dashes if present, then add them back)
         String formattedUuid = uuidString.replaceAll("-", "");
 
         if (formattedUuid.length() == 32) {
@@ -45,7 +44,7 @@ public class BambooSession {
 
     public static void setSession(Session session) {
         currentSession = session;
-        LOGGER.info("(bamboo) Session changed to: {}", session.getUsername());
+        LOGGER.info("(theowl) Session changed to: {}", session.getUsername());
     }
 
     public static void restoreOriginalSession() {
