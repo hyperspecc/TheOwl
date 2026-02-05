@@ -1,6 +1,6 @@
-package com.bamboosession.mixin;
+package com.theowl.mixin;
 
-import com.bamboosession.BambooSession;
+import com.theowl.TheOwl;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import net.minecraft.client.MinecraftClient;
@@ -30,57 +30,43 @@ public abstract class MinecraftClientMixin {
     public File runDirectory;
 
     @Unique
-    private UUID bamboo$lastUuid = null;
+    private UUID theowl$lastUuid = null;
 
     @Unique
-    private String bamboo$lastToken = null;
+    private String theowl$lastToken = null;
 
     @Unique
-    private ProfileKeys bamboo$cachedProfileKeys = null;
+    private ProfileKeys theowl$cachedProfileKeys = null;
 
     @Inject(method = "getSession", at = @At("HEAD"), cancellable = true)
-    private void bamboo$onGetSession(CallbackInfoReturnable<Session> cir) {
-        Session customSession = BambooSession.getCurrentSession();
+    private void theowl$onGetSession(CallbackInfoReturnable<Session> cir) {
+        Session customSession = TheOwl.getCurrentSession();
         if (customSession != null) {
             cir.setReturnValue(customSession);
         }
     }
 
     @Inject(method = "getProfileKeys", at = @At("HEAD"), cancellable = true)
-    private void bamboo$onGetProfileKeys(CallbackInfoReturnable<ProfileKeys> cir) {
-        if (!BambooSession.overrideActive) {
+    private void theowl$onGetProfileKeys(CallbackInfoReturnable<ProfileKeys> cir) {
+        if (!TheOwl.overrideActive) {
             return;
         }
 
-        Session currentSession = BambooSession.currentSession;
+        Session currentSession = TheOwl.currentSession;
         UUID currentUuid = currentSession.getUuidOrNull();
         String currentToken = currentSession.getAccessToken();
 
-        // Check if session changed
-        if (bamboo$lastUuid == null ||
-                !bamboo$lastUuid.equals(currentUuid) ||
-                bamboo$lastToken == null ||
-                !bamboo$lastToken.equals(currentToken)) {
+        if (theowl$lastUuid == null ||
+                !theowl$lastUuid.equals(currentUuid) ||
+                theowl$lastToken == null ||
+                !theowl$lastToken.equals(currentToken)) {
 
-            bamboo$lastUuid = currentUuid;
-            bamboo$lastToken = currentToken;
+            theowl$lastUuid = currentUuid;
+            theowl$lastToken = currentToken;
 
-            BambooSession.LOGGER.info("Creating ProfileKeys for: {}", currentSession.getUsername());
+            TheOwl.LOGGER.info("Creating ProfileKeys for: {}", currentSession.getUsername());
 
             try {
                 UserApiService userApiService = authenticationService.createUserApiService(currentToken);
                 Path profileKeysPath = runDirectory.toPath().resolve("profilekeys");
-                bamboo$cachedProfileKeys = ProfileKeys.create(userApiService, currentSession, profileKeysPath);
-
-                BambooSession.LOGGER.info("Successfully created ProfileKeys");
-            } catch (Exception e) {
-                BambooSession.LOGGER.error("Failed to create ProfileKeys: {}", e.getMessage());
-                bamboo$cachedProfileKeys = null;
-            }
-        }
-
-        if (bamboo$cachedProfileKeys != null) {
-            cir.setReturnValue(bamboo$cachedProfileKeys);
-        }
-    }
-}
+                theowl$cachedProfileKeys = Profile
