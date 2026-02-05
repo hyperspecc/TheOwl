@@ -1,9 +1,9 @@
-package com.theowl.mixin;
+package com.bamboosession.mixin;
 
-import com.theowl.TheOwl;
-import com.theowl.screens.TheOwlLoginScreen;
-import com.theowl.screens.TheOwlEditScreen;
-import com.theowl.utils.TheOwlAPI;
+import com.bamboosession.TheOwl;
+import com.bamboosession.screens.TheOwlLoginScreen;
+import com.bamboosession.screens.TheOwlEditScreen;
+import com.bamboosession.utils.TheOwlAPI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -53,35 +53,4 @@ public abstract class MultiplayerScreenMixin extends Screen {
     private void theowl$onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         String username = TheOwl.currentSession.getUsername();
 
-        if (theowl$isValid == null && !theowl$validating) {
-            theowl$validating = true;
-            new Thread(() -> {
-                try {
-                    theowl$isValid = TheOwlAPI.validateSession(
-                            TheOwl.currentSession.getAccessToken(),
-                            TheOwl.currentSession.getUsername(),
-                            TheOwl.currentSession.getUuidOrNull().toString()
-                    );
-                } catch (Exception e) {
-                    theowl$isValid = false;
-                }
-            }, "TheOwlValidation").start();
-        }
-
-        Text status;
-        if (theowl$isValid == null) {
-            status = Text.literal("[...] Validating").formatted(Formatting.GRAY);
-        } else if (theowl$isValid) {
-            status = Text.literal("[✓] Valid").formatted(Formatting.GREEN);
-        } else {
-            status = Text.literal("[✗] Invalid").formatted(Formatting.RED);
-        }
-
-        Text display = Text.literal("User: ")
-                .append(Text.literal(username).formatted(Formatting.WHITE))
-                .append(Text.literal(" | ").formatted(Formatting.DARK_GRAY))
-                .append(status);
-
-        context.drawText(this.textRenderer, display, 5, 10, 0xFFFFFF, false);
-    }
-}
+        if (theowl$isValid == null &&
