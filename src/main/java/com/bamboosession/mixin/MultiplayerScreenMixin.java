@@ -1,9 +1,9 @@
-package com.bamboosession.mixin;
+package com.theowl.mixin;
 
-import com.bamboosession.BambooSession;
-import com.bamboosession.screens.BambooLoginScreen;
-import com.bamboosession.screens.BambooEditScreen;
-import com.bamboosession.utils.BambooAPI;
+import com.theowl.TheOwl;
+import com.theowl.screens.TheOwlLoginScreen;
+import com.theowl.screens.TheOwlEditScreen;
+import com.theowl.utils.TheOwlAPI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,57 +21,57 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MultiplayerScreenMixin extends Screen {
 
     @Unique
-    private Boolean bamboo$isValid = null;
+    private Boolean theowl$isValid = null;
 
     @Unique
-    private boolean bamboo$validating = false;
+    private boolean theowl$validating = false;
 
     protected MultiplayerScreenMixin(Text title) {
         super(title);
     }
 
     @Inject(method = "init", at = @At("TAIL"))
-    private void bamboo$onInit(CallbackInfo ci) {
-        bamboo$isValid = null;
-        bamboo$validating = false;
+    private void theowl$onInit(CallbackInfo ci) {
+        theowl$isValid = null;
+        theowl$validating = false;
 
         int x = this.width - 90;
         int y = 5;
 
         this.addDrawableChild(ButtonWidget.builder(
                 Text.literal("Login"),
-                btn -> MinecraftClient.getInstance().setScreen(new BambooLoginScreen())
+                btn -> MinecraftClient.getInstance().setScreen(new TheOwlLoginScreen())
         ).dimensions(x, y, 80, 20).build());
 
         this.addDrawableChild(ButtonWidget.builder(
                 Text.literal("Edit"),
-                btn -> MinecraftClient.getInstance().setScreen(new BambooEditScreen())
+                btn -> MinecraftClient.getInstance().setScreen(new TheOwlEditScreen())
         ).dimensions(x - 90, y, 80, 20).build());
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void bamboo$onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        String username = BambooSession.currentSession.getUsername();
+    private void theowl$onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        String username = TheOwl.currentSession.getUsername();
 
-        if (bamboo$isValid == null && !bamboo$validating) {
-            bamboo$validating = true;
+        if (theowl$isValid == null && !theowl$validating) {
+            theowl$validating = true;
             new Thread(() -> {
                 try {
-                    bamboo$isValid = BambooAPI.validateSession(
-                            BambooSession.currentSession.getAccessToken(),
-                            BambooSession.currentSession.getUsername(),
-                            BambooSession.currentSession.getUuidOrNull().toString()
+                    theowl$isValid = TheOwlAPI.validateSession(
+                            TheOwl.currentSession.getAccessToken(),
+                            TheOwl.currentSession.getUsername(),
+                            TheOwl.currentSession.getUuidOrNull().toString()
                     );
                 } catch (Exception e) {
-                    bamboo$isValid = false;
+                    theowl$isValid = false;
                 }
-            }, "BambooValidation").start();
+            }, "TheOwlValidation").start();
         }
 
         Text status;
-        if (bamboo$isValid == null) {
+        if (theowl$isValid == null) {
             status = Text.literal("[...] Validating").formatted(Formatting.GRAY);
-        } else if (bamboo$isValid) {
+        } else if (theowl$isValid) {
             status = Text.literal("[✓] Valid").formatted(Formatting.GREEN);
         } else {
             status = Text.literal("[✗] Invalid").formatted(Formatting.RED);
