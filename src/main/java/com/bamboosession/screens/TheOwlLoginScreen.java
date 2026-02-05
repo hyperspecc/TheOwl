@@ -1,7 +1,7 @@
-package com.bamboosession.screens;
+package com.theowl.screens;
 
-import com.bamboosession.BambooSession;
-import com.bamboosession.utils.BambooAPI;
+import com.theowl.TheOwl;
+import com.theowl.utils.TheOwlAPI;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -11,15 +11,15 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class BambooLoginScreen extends Screen {
+public class TheOwlLoginScreen extends Screen {
     private TextFieldWidget sessionField;
     private ButtonWidget loginButton;
     private ButtonWidget restoreButton;
     private Text statusMessage;
 
-    public BambooLoginScreen() {
-        super(Text.literal("Bamboo Session Login"));
-        this.statusMessage = Text.literal("(Bamboo) Enter your session ID").formatted(Formatting.GOLD);
+    public TheOwlLoginScreen() {
+        super(Text.literal("TheOwl Session Login"));
+        this.statusMessage = Text.literal("(TheOwl) Enter your session ID").formatted(Formatting.GOLD);
     }
 
     @Override
@@ -27,7 +27,6 @@ public class BambooLoginScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        // Session input field
         sessionField = new TextFieldWidget(
                 this.textRenderer,
                 centerX - 100,
@@ -40,7 +39,6 @@ public class BambooLoginScreen extends Screen {
         sessionField.setFocused(true);
         this.addSelectableChild(sessionField);
 
-        // Login button
         loginButton = ButtonWidget.builder(Text.literal("Login"), button -> {
             String sessionId = sessionField.getText().trim();
 
@@ -50,34 +48,32 @@ public class BambooLoginScreen extends Screen {
             }
 
             try {
-                BambooAPI.ProfileInfo info = BambooAPI.getProfileInfo(sessionId);
-                BambooSession.setSession(BambooSession.createSession(
+                TheOwlAPI.ProfileInfo info = TheOwlAPI.getProfileInfo(sessionId);
+                TheOwl.setSession(TheOwl.createSession(
                         info.username,
                         info.uuid,
                         sessionId
                 ));
 
-                statusMessage = Text.literal("Bamboo logged you in as: " + info.username)
+                statusMessage = Text.literal("TheOwl logged you in as: " + info.username)
                         .formatted(Formatting.GREEN);
                 restoreButton.active = true;
 
             } catch (Exception e) {
                 statusMessage = Text.literal("Invalid session ID").formatted(Formatting.RED);
-                BambooSession.LOGGER.error("Login failed: {}", e.getMessage());
+                TheOwl.LOGGER.error("Login failed: {}", e.getMessage());
             }
         }).dimensions(centerX - 100, centerY + 25, 97, 20).build();
         this.addDrawableChild(loginButton);
 
-        // Restore button
         restoreButton = ButtonWidget.builder(Text.literal("Restore"), button -> {
-            BambooSession.restoreOriginalSession();
+            TheOwl.restoreOriginalSession();
             statusMessage = Text.literal("Restored original session").formatted(Formatting.GREEN);
             restoreButton.active = false;
         }).dimensions(centerX + 3, centerY + 25, 97, 20).build();
-        restoreButton.active = BambooSession.isUsingCustomSession();
+        restoreButton.active = TheOwl.isUsingCustomSession();
         this.addDrawableChild(restoreButton);
 
-        // Back button
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Back"), button -> {
             assert this.client != null;
             this.client.setScreen(new MultiplayerScreen(new TitleScreen()));
